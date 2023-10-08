@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import pathlib
 import plotly.graph_objects as go
@@ -12,39 +13,11 @@ dash.register_page(__name__,
                    title='Periodic Breakdown')
 
 
-# loading the trip data and transforming it accordingly
-def get_pandas_data(csv_filename: str) -> pd.DataFrame:
-   PATH = pathlib.Path(__file__).parent
-   DATA_PATH = PATH.joinpath("../data").resolve()
-   return pd.read_csv(DATA_PATH.joinpath(csv_filename))
-
-df = get_pandas_data("df1.csv")
-
-arrays = []
-
-all_df = df.groupby(['start_day_of_week',
-                     'start_hour']
-                    ).size().to_frame().reset_index(
-                    ).rename(columns={0:"counts"})
-
-all_mat = all_df.pivot_table(index="start_day_of_week", 
-                             columns="start_hour", 
-                             values="counts").to_numpy()
-
-arrays.append(all_mat)
-
-months_df = df.groupby(['start_month',
-                         'start_day_of_week',
-                         'start_hour']
-                       ).size().to_frame().reset_index(
-                       ).rename(columns={0:"counts"})
-
-for month in ['July', 'August', 'September']:
-    dff_month = months_df[months_df.start_month == month]
-    month_arr = dff_month.pivot_table(index="start_day_of_week", 
-                                      columns="start_hour", 
-                                      values="counts").to_numpy()
-    arrays.append(month_arr)
+# loading the trip data array
+PATH = pathlib.Path(__file__).parent
+DATA_PATH = PATH.joinpath("../data").resolve()
+with open(DATA_PATH.joinpath('arrays.npy'), 'rb') as f:
+    arrays = np.load(f)
 
 
 # Figure
