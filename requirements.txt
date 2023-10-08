@@ -4,4 +4,3 @@ dash_gif_component==1.1.0
 pandas==1.3.5
 plotly==5.17.0
 gunicorn
-dash-tools
